@@ -1,0 +1,29 @@
+services:
+  db:
+    image: postgres:15-alpine
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: ecommercedb
+    ports:
+      - "${DB_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  api:
+    image: ${API_IMAGE:-e-ecommerce-01-api:dev}
+    build: .
+    restart: always
+    depends_on:
+      - db
+    ports:
+      - "${API_PORT:-8000}:8000"
+    environment:
+      DATABASE_URL: ${DATABASE_URL:-postgresql://postgres:password@db:5432/ecommercedb}
+      SECRET_KEY: ${SECRET_KEY:-dev-secret}
+      ALGORITHM: ${ALGORITHM:-HS256}
+      ACCESS_TOKEN_EXPIRE_MINUTES: ${ACCESS_TOKEN_EXPIRE_MINUTES:-30}
+
+volumes:
+  postgres_data:
