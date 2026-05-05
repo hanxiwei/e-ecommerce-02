@@ -102,17 +102,13 @@ else
   docker compose -p ${env.COMPOSE_PROJECT} exec -T api python -m pytest tests/ ${markerExpr} --alluredir=/app/allure-results || true
 fi""")
 
-                        compose("-p ${env.COMPOSE_PROJECT} exec -T api python tests/ai_report.py /app/allure-results --out-json /app/ai-summary.json --out-md /app/ai-summary.md")
-
                         def apiCid = sh(returnStdout: true, script: """if command -v docker-compose >/dev/null 2>&1; then
   docker-compose -p ${env.COMPOSE_PROJECT} ps -q api
 else
   docker compose -p ${env.COMPOSE_PROJECT} ps -q api
 fi""").trim()
-                        sh 'rm -rf ./allure-results ./ai-summary.json ./ai-summary.md || true'
+                        sh 'rm -rf ./allure-results || true'
                         sh "docker cp ${apiCid}:/app/allure-results ./allure-results"
-                        sh "docker cp ${apiCid}:/app/ai-summary.json ./ai-summary.json"
-                        sh "docker cp ${apiCid}:/app/ai-summary.md ./ai-summary.md"
                         sh 'chmod -R 777 allure-results || true'
 
                         if (testExit != 0) {
@@ -138,7 +134,7 @@ fi"""
 
                 sh 'rm -rf ./allure-report || true'
                 allure includeProperties: false, jdk: '', results: [[path: 'allure-results']]
-                archiveArtifacts artifacts: 'ai-summary.json,ai-summary.md', allowEmptyArchive: true
+                archiveArtifacts artifacts: 'allure-results/**', allowEmptyArchive: true
                 if (env.COMPOSE_PROJECT != null && env.COMPOSE_PROJECT.trim()) {
                     compose("-p ${env.COMPOSE_PROJECT} down -v --remove-orphans || true")
                 }
