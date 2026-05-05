@@ -96,10 +96,10 @@ fi"""
                         compose("-p ${env.COMPOSE_PROJECT} exec -T api rm -rf /app/allure-results || true")
                         def testExit = sh(returnStatus: true, script: """if command -v docker-compose >/dev/null 2>&1; then
   docker-compose -p ${env.COMPOSE_PROJECT} exec -T api mkdir -p /app/allure-results
-  docker-compose -p ${env.COMPOSE_PROJECT} exec -T api python -m pytest tests/ ${markerExpr} --alluredir=/app/allure-results || true
+  docker-compose -p ${env.COMPOSE_PROJECT} exec -T api python -m pytest tests/ ${markerExpr} --alluredir=/app/allure-results
 else
   docker compose -p ${env.COMPOSE_PROJECT} exec -T api mkdir -p /app/allure-results
-  docker compose -p ${env.COMPOSE_PROJECT} exec -T api python -m pytest tests/ ${markerExpr} --alluredir=/app/allure-results || true
+  docker compose -p ${env.COMPOSE_PROJECT} exec -T api python -m pytest tests/ ${markerExpr} --alluredir=/app/allure-results
 fi""")
 
                         def apiCid = sh(returnStdout: true, script: """if command -v docker-compose >/dev/null 2>&1; then
