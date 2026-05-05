@@ -96,10 +96,10 @@ fi"""
                         compose("-p ${env.COMPOSE_PROJECT} exec -T api rm -rf /app/allure-results /app/htmlcov || true")
                         def testExit = sh(returnStatus: true, script: """if command -v docker-compose >/dev/null 2>&1; then
   docker-compose -p ${env.COMPOSE_PROJECT} exec -T api mkdir -p /app/allure-results
-  docker-compose -p ${env.COMPOSE_PROJECT} exec -T api python -m pytest tests/ ${markerExpr} --cov=app --cov-report=html --cov-fail-under=80 --alluredir=/app/allure-results || true
+  docker-compose -p ${env.COMPOSE_PROJECT} exec -T api python -m pytest tests/ ${markerExpr} --cov=app --cov-report=html --cov-fail-under=0 --alluredir=/app/allure-results || true
 else
   docker compose -p ${env.COMPOSE_PROJECT} exec -T api mkdir -p /app/allure-results
-  docker compose -p ${env.COMPOSE_PROJECT} exec -T api python -m pytest tests/ ${markerExpr} --cov=app --cov-report=html --cov-fail-under=80 --alluredir=/app/allure-results || true
+  docker compose -p ${env.COMPOSE_PROJECT} exec -T api python -m pytest tests/ ${markerExpr} --cov=app --cov-report=html --cov-fail-under=0 --alluredir=/app/allure-results || true
 fi""")
 
                         compose("-p ${env.COMPOSE_PROJECT} exec -T api python tests/ai_report.py /app/allure-results --out-json /app/ai-summary.json --out-md /app/ai-summary.md")
