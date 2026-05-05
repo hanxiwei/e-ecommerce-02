@@ -9,7 +9,7 @@ dotenv==0.9.9
 ecdsa==0.19.0
 email_validator==2.2.0
 fastapi==0.115.8
-greenlet==3.0.3
+greenlet
 h11==0.14.0
 idna==3.10
 passlib==1.7.4
