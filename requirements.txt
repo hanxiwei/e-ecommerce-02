@@ -34,4 +34,3 @@ playwright>=1.41.2
 requests>=2.32.2
 allure-pytest==2.13.2
 locust==2.43.4
-pytest-cov>=5.0.0

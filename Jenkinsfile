@@ -93,13 +93,13 @@ fi"""
                         "ALGORITHM=HS256",
                         "ACCESS_TOKEN_EXPIRE_MINUTES=30",
                     ]) {
-                        compose("-p ${env.COMPOSE_PROJECT} exec -T api rm -rf /app/allure-results /app/htmlcov || true")
+                        compose("-p ${env.COMPOSE_PROJECT} exec -T api rm -rf /app/allure-results || true")
                         def testExit = sh(returnStatus: true, script: """if command -v docker-compose >/dev/null 2>&1; then
   docker-compose -p ${env.COMPOSE_PROJECT} exec -T api mkdir -p /app/allure-results
-  docker-compose -p ${env.COMPOSE_PROJECT} exec -T api python -m pytest tests/ ${markerExpr} --cov=app --cov-report=html --cov-fail-under=0 --alluredir=/app/allure-results || true
+  docker-compose -p ${env.COMPOSE_PROJECT} exec -T api python -m pytest tests/ ${markerExpr} --alluredir=/app/allure-results || true
 else
   docker compose -p ${env.COMPOSE_PROJECT} exec -T api mkdir -p /app/allure-results
-  docker compose -p ${env.COMPOSE_PROJECT} exec -T api python -m pytest tests/ ${markerExpr} --cov=app --cov-report=html --cov-fail-under=0 --alluredir=/app/allure-results || true
+  docker compose -p ${env.COMPOSE_PROJECT} exec -T api python -m pytest tests/ ${markerExpr} --alluredir=/app/allure-results || true
 fi""")
 
                         compose("-p ${env.COMPOSE_PROJECT} exec -T api python tests/ai_report.py /app/allure-results --out-json /app/ai-summary.json --out-md /app/ai-summary.md")
@@ -109,9 +109,8 @@ fi""")
 else
   docker compose -p ${env.COMPOSE_PROJECT} ps -q api
 fi""").trim()
-                        sh 'rm -rf ./allure-results ./ai-summary.json ./ai-summary.md ./htmlcov || true'
+                        sh 'rm -rf ./allure-results ./ai-summary.json ./ai-summary.md || true'
                         sh "docker cp ${apiCid}:/app/allure-results ./allure-results"
-                        sh "docker cp ${apiCid}:/app/htmlcov ./htmlcov || true"
                         sh "docker cp ${apiCid}:/app/ai-summary.json ./ai-summary.json"
                         sh "docker cp ${apiCid}:/app/ai-summary.md ./ai-summary.md"
                         sh 'chmod -R 777 allure-results || true'
@@ -139,7 +138,7 @@ fi"""
 
                 sh 'rm -rf ./allure-report || true'
                 allure includeProperties: false, jdk: '', results: [[path: 'allure-results']]
-                archiveArtifacts artifacts: 'ai-summary.json,ai-summary.md,htmlcov/**', allowEmptyArchive: true
+                archiveArtifacts artifacts: 'ai-summary.json,ai-summary.md', allowEmptyArchive: true
                 if (env.COMPOSE_PROJECT != null && env.COMPOSE_PROJECT.trim()) {
                     compose("-p ${env.COMPOSE_PROJECT} down -v --remove-orphans || true")
                 }
